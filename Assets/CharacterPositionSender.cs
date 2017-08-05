@@ -17,13 +17,23 @@ public class CharacterPositionSender : MonoBehaviour {
 	void Update () {
 
         SendPosition();
+        CheckIsWalkAndSend();
 
+    }
+
+    private void CheckIsWalkAndSend()
+    {
+        if(GetComponent<Rigidbody>().velocity.magnitude > .1f)
+        {
+            Sender.Sending();
+        }
     }
 
     private void SendPosition()
     {
-        Sender.Data["X"] = transform.position.x.ToString();
-        Sender.Data["Y"] = transform.position.y.ToString();
-        Sender.Data["Z"] = transform.position.z.ToString();
+        Sender.Data["x"] = transform.position.x.ToString();
+        Sender.Data["y"] = transform.position.y.ToString();
+        Sender.Data["z"] = transform.position.z.ToString();
+
     }
 }
