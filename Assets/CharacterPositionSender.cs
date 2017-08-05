@@ -22,8 +22,9 @@ public class CharacterPositionSender : MonoBehaviour {
 
     private void SendPosition()
     {
-
-        //Sender.Data["PlayerPosition"] = transform.position.ToString();
+        Sender.Data["PlayerPositionX"] = transform.position.x.ToString();
+        Sender.Data["PlayerPositionY"] = transform.position.y.ToString();
+		Sender.Data["PlayerPositionZ"] = transform.position.z.ToString();
 
     }
 }
