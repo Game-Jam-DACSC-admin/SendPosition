@@ -6,65 +6,76 @@ using UnityEngine.UI;
 
 public class Sender : MonoBehaviour
 {
+    UISystem UISystem;
+    public GameObject Player;
     public Text Text;
     private SocketIOComponent socket;
     public Dictionary<string, string> Data = new Dictionary<string, string>();
 
     void Start()
     {
-
-        /*         Data["x"] = "0";
-                Data["y"] = "0";
-                Data["z"] = "0"; */
-
+        UISystem = GameObject.FindObjectOfType<UISystem>();
         socket = GameObject.FindObjectOfType<SocketIOComponent>().GetComponent<SocketIOComponent>();
-        socket.On("user", Groups);
-        socket.On("boop", TestBoop);
-        socket.On("error", TestError);
-        socket.On("close", TestClose);
-    }
-
-    void Update()
-    {
-
-
+        socket.On("world", socketWorld);
+        socket.On("group", socketGroup);
+        socket.On("error", socketError);
+        socket.On("close", socketClose);
     }
 
     public void Sending()
     {
-        socket.Emit("beep", new JSONObject(Data));
+        socket.Emit("world", new JSONObject(Data));
     }
 
-
-    // public void TestOpen(SocketIOEvent e){
-    // Debug.Log("[SocketIO] Open received: " + e.name + " " + e.data);
-    // }
-
-    public void TestBoop(SocketIOEvent e)
+    public void socketWorld(SocketIOEvent e)
     {
-        Debug.Log(e.data);
-        if (e.data["msg"])
-        {
-            Text.text = e.data["msg"].ToString();
-            // users[0] = e.data["msg"].ToString();
-            // Debug.Log(users);
+        GameObject PlayerObject = GameObject.Find(e.data["uid"].ToString());
+        //Debug.Log(e.data);
+         if(e.data["type"].ToString() == "\"position\"")
+        { 
+            print("UseData");
+            Vector3 position = PlayerObject.transform.position;
+            float x = float.Parse(e.data["x"].ToString());
+            float y = float.Parse(e.data["y"].ToString());
+            float z = float.Parse(e.data["z"].ToString());
+            position.x = x;
+            position.y = y;
+            position.z = z;
+            PlayerObject.transform.position = position;
         }
+        else if(e.data["type"].ToString() == "\"rotation\"")
+        {
+            print("GotRotation");
+            Quaternion rotation = PlayerObject.transform.rotation;
+            float y = float.Parse(e.data["y"].ToString());
+            rotation.y = y;
+            PlayerObject.transform.eulerAngles = new Vector3(0, rotation.y, 0);
+        }
+        
     }
 
-    public void TestError(SocketIOEvent e)
+    public void socketError(SocketIOEvent e)
     {
         Debug.Log("[SocketIO] Error received: " + e.name + " " + e.data);
     }
 
-    public void TestClose(SocketIOEvent e)
+    public void socketClose(SocketIOEvent e)
     {
         Debug.Log("[SocketIO] Close received: " + e.name + " " + e.data);
     }
 
-
-    public void Groups(SocketIOEvent e)
+    public void socketGroup(SocketIOEvent e)
     {
         Debug.Log(e.data);
+        if(e.data["join"])
+        {
+            Debug.Log("Join");
+            GameObject Clone = Instantiate(Player);
+            Clone.name = e.data["uid"].ToString();
+        }
+        else if(e.data["leave"]){
+             GameObject.Destroy(GameObject.Find(e.data["uid"].ToString()), 1.0f);
+        }
         // users[users.Length] = e.data["uid"].ToString();
         // Debug.Log(users);
     }
