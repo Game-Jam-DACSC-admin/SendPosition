@@ -33,7 +33,7 @@ public class Sender : MonoBehaviour
         //Debug.Log(e.data);
          if(e.data["type"].ToString() == "\"position\"")
         { 
-            print("UseData");
+            //print("UseData");
             Vector3 position = PlayerObject.transform.position;
             float x = float.Parse(e.data["x"].ToString());
             float y = float.Parse(e.data["y"].ToString());
@@ -45,7 +45,7 @@ public class Sender : MonoBehaviour
         }
         else if(e.data["type"].ToString() == "\"rotation\"")
         {
-            print("GotRotation");
+            //print("GotRotation");
             Quaternion rotation = PlayerObject.transform.rotation;
             float y = float.Parse(e.data["y"].ToString());
             rotation.y = y;
@@ -69,7 +69,7 @@ public class Sender : MonoBehaviour
         Debug.Log(e.data);
         if(e.data["join"])
         {
-            Debug.Log("Join");
+            //Debug.Log("Join");
             GameObject Clone = Instantiate(Player);
             Clone.name = e.data["uid"].ToString();
         }

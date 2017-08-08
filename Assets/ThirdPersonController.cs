@@ -32,6 +32,8 @@ public class ThirdPersonController : MonoBehaviour {
     public float X_Rotation;//X軸旋轉量
     public bool AttackStart = false;
     public GameObject CameraRoot;
+
+    Quaternion LastRotation;
     /*********************************/
 
     // Use this for initialization
@@ -49,10 +51,7 @@ public class ThirdPersonController : MonoBehaviour {
 
     void Sending(Dictionary<string, string> Data)
     {
-
-        Socket.Emit("world", new JSONObject(Data));
-        
-
+        Socket.Emit("world", new JSONObject(Data)); 
     }
 
     // Update is called once per frame
@@ -94,12 +93,28 @@ public class ThirdPersonController : MonoBehaviour {
             /*當角色在地面時
             * 玩家控制與行走的作用力相乘*/
 		    RB.AddRelativeForce(Input.GetAxis("Horizontal") * WalkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * WalkAcceleration * Time.deltaTime);
-            Data["x"] = transform.position.x.ToString();
-			Data["y"] = transform.position.y.ToString();
-			Data["z"] = transform.position.z.ToString();
-            Data["type"] = "position";
-            Sending(Data);
+            if (RB.velocity.magnitude > .1f)
+            {
+                Data["x"] = transform.position.x.ToString();
+                Data["y"] = transform.position.y.ToString();
+                Data["z"] = transform.position.z.ToString();
+                Data["type"] = "position";
+				print("SendPos");
+                Sending(Data);
+            }
         }
+		else
+		{
+			if (RB.velocity.magnitude > .1f)
+            {
+                Data["x"] = transform.position.x.ToString();
+                Data["y"] = transform.position.y.ToString();
+                Data["z"] = transform.position.z.ToString();
+                Data["type"] = "position";
+				print("SendPosJump");
+                Sending(Data);
+            }
+		}
 
 		/***************跳躍BJ4*****************/
 		if (Input.GetButtonDown("Jump") && IsGrounded == true)
@@ -119,8 +134,13 @@ public class ThirdPersonController : MonoBehaviour {
         CameraRoot.transform.rotation = Quaternion.Euler(X_Rotation, Y_Rotation, 0);
         Data["y"] = (transform.rotation.y*180).ToString();
 		Data["type"] = "rotation";
-        Debug.Log(transform.rotation);
-        Sending(Data);
+        //Debug.Log(transform.rotation);
+        if (transform.rotation.y != LastRotation.y && transform.rotation.y-LastRotation.y !=0)
+        {
+            print("SendRot" + RB.angularVelocity.magnitude);
+            Sending(Data);
+        }
+        LastRotation = transform.rotation;
     }
 
 	void OnCollisionStay (Collision collisionInfo)
