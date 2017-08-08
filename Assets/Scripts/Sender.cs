@@ -8,9 +8,7 @@ public class Sender : MonoBehaviour
 {
     UISystem UISystem;
     public GameObject Player;
-    public Text Text;
     private SocketIOComponent socket;
-    public Dictionary<string, string> Data = new Dictionary<string, string>();
 
     void Start()
     {
@@ -20,11 +18,6 @@ public class Sender : MonoBehaviour
         socket.On("group", socketGroup);
         socket.On("error", socketError);
         socket.On("close", socketClose);
-    }
-
-    public void Sending()
-    {
-        socket.Emit("world", new JSONObject(Data));
     }
 
     public void socketWorld(SocketIOEvent e)
@@ -66,14 +59,14 @@ public class Sender : MonoBehaviour
 
     public void socketGroup(SocketIOEvent e)
     {
-        Debug.Log(e.data);
         if(e.data["join"])
         {
             //Debug.Log("Join");
             GameObject Clone = Instantiate(Player);
             Clone.name = e.data["uid"].ToString();
         }
-        else if(e.data["leave"]){
+        else if(e.data["leave"])
+        {
              GameObject.Destroy(GameObject.Find(e.data["uid"].ToString()), 1.0f);
         }
         // users[users.Length] = e.data["uid"].ToString();

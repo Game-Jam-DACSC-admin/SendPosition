@@ -32,12 +32,12 @@ public class ThirdPersonController : MonoBehaviour {
     public float X_Rotation;//X軸旋轉量
     public bool AttackStart = false;
     public GameObject CameraRoot;
-
-    Quaternion LastRotation;
     /*********************************/
+    Quaternion LastRotation;
 
     // Use this for initialization
-    void Start () {
+    void Start () 
+    {
         Socket = GameObject.FindObjectOfType<SocketIOComponent>();
         RB = GetComponent<Rigidbody>();
     }
@@ -58,7 +58,7 @@ public class ThirdPersonController : MonoBehaviour {
     void Move () 
 	{
 		Dictionary<string, string> Data = new Dictionary<string, string>();
-		/********設定水平移動的二維量*********/
+	    /********設定水平移動的二維量*********/
 		HorizontalMovement.x = RB.velocity.x;
 		HorizontalMovement.y = RB.velocity.z;
         /*************************************/
